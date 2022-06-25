@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useReducer } from 'react';
+import React, { useReducer, useRef } from 'react';
 
 import Home from './pages/Home';
 import New from './pages/New';
@@ -20,7 +20,7 @@ const reducer = (state, action) => {
       break;
     }
     case "REMOVE": {
-      newState = state.filter((it) => { it.id !== action.targerId });
+      newState = state.filter((it) => it.id !== action.targerId);
       break;
     }
     case "EDIT": {
@@ -33,6 +33,9 @@ const reducer = (state, action) => {
   }
   return newState;
 }
+
+export const DiaryStateContext = React.createContext();
+export const DiaryDispatchContext = React.createContext();
 
 function App() {
 
@@ -74,16 +77,22 @@ function App() {
 
 
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/new' element={<New />} />
-          <Route path='/edit' element={<Edit />} />
-          <Route path='/diary/:id' element={<Diary />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <DiaryStateContext.Provider value={data}>
+      <DiaryDispatchContext.Provider value={
+        { onCreate, onEdit, onRemove }
+      }>
+        <BrowserRouter>
+          <div className="App">
+            <Routes>
+              <Route path='/' element={<Home />} />
+              <Route path='/new' element={<New />} />
+              <Route path='/edit' element={<Edit />} />
+              <Route path='/diary/:id' element={<Diary />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </DiaryDispatchContext.Provider>
+    </DiaryStateContext.Provider>
   );
 }
 
